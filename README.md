@@ -12,7 +12,7 @@ Aplikasi ini dibangun murni menggunakan **HTML5, Vanilla CSS3, dan Native JavaSc
 - **NIM**: `20240140118`
 - **Format Name Repository**: `PAW-ANTARA-WEEK5-20240140118`
 - **Repository Link**: [https://github.com/ilham101106/PAW-ANTARA-WEEK5-20240140118.git](https://github.com/ilham101106/PAW-ANTARA-WEEK5-20240140118.git)
-
+- - **Pages Link** : https://ilham101106.github.io/PAW-ANTARA-WEEK5-20240140118/
 ---
 
 ## ✨ Fitur Utama Application
