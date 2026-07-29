@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LuminaStore - Katalog Produk DummyJSON Native JS</title>
+  <meta name="description" content="Aplikasi web katalog produk modern berbasis HTML, CSS, dan JavaScript Native menggunakan DummyJSON API. Tugas PAW Antara Week 5 NIM 20240140118.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Announcement Bar -->
+  <div class="announcement-bar">
+    <div class="container announcement-content">
+      <span><i class="fa-solid fa-graduation-cap"></i> Tugas 5 PAW Antara &bull; <strong>PAW-ANTARA-WEEK5-20240140118</strong></span>
+      <span class="api-tag"><i class="fa-solid fa-bolt"></i> Live API: dummyjson.com/products</span>
+    </div>
+  </div>
+
+  <!-- Header / Navbar -->
+  <header class="navbar-header">
+    <div class="container navbar-container">
+      <!-- Brand Logo -->
+      <a href="#" class="brand-logo" id="brand-logo">
+        <div class="logo-icon">
+          <i class="fa-solid fa-bag-shopping"></i>
+        </div>
+        <div class="logo-text">
+          <span class="brand-name">Lumina<span class="highlight">Store</span></span>
+          <span class="brand-sub">DummyJSON API Fetch</span>
+        </div>
+      </a>
+
+      <!-- Quick Search Bar (Navbar) -->
+      <div class="nav-search">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" id="nav-search-input" placeholder="Cari produk, merk, kategori..." autocomplete="off">
+        <button type="button" id="clear-search-btn" class="clear-btn hidden" aria-label="Hapus Pencarian">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="nav-actions">
+        <!-- Theme Switcher -->
+        <button type="button" id="theme-toggle" class="icon-btn" title="Ubah Mode Gelap/Terang" aria-label="Toggle Theme">
+          <i class="fa-solid fa-moon moon-icon"></i>
+          <i class="fa-solid fa-sun sun-icon"></i>
+        </button>
+
+        <!-- Wishlist Icon -->
+        <button type="button" id="wishlist-btn" class="icon-btn" title="Daftar Keinginan" aria-label="Wishlist">
+          <i class="fa-regular fa-heart"></i>
+          <span class="badge" id="wishlist-count">0</span>
+        </button>
+
+        <!-- Cart Icon -->
+        <button type="button" id="cart-btn" class="icon-btn cart-icon-btn" title="Keranjang Belanja" aria-label="Shopping Cart">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="badge" id="cart-count">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-glow hero-glow-1"></div>
+    <div class="hero-glow hero-glow-2"></div>
+    <div class="container hero-container">
+      <div class="hero-badge">
+        <i class="fa-solid fa-sparkles"></i> RESTful API Fetching Project
+      </div>
+      <h1 class="hero-title">Jelajahi Produk Terbaik dari <span class="gradient-text">DummyJSON</span></h1>
+      <p class="hero-subtitle">Platform katalog produk interaktif tanpa framework JS. Dilengkapi fitur pencarian real-time, filter kategori, pengurutan harga, serta keranjang belanja interaktif.</p>
+
+      <!-- Stats Bar -->
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-value" id="stat-total-products">--</span>
+          <span class="stat-label">Total Produk</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-value" id="stat-total-categories">--</span>
+          <span class="stat-label">Kategori</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-value"><i class="fa-solid fa-star text-amber"></i> 4.8</span>
+          <span class="stat-label">Rating Rata-rata</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Section -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- Filter Controls Toolbar -->
+      <section class="toolbar-section">
+        <!-- Categories Chips / Filter Carousel -->
+        <div class="category-filter-wrapper">
+          <div class="category-chips-header">
+            <span class="toolbar-label"><i class="fa-solid fa-layer-group"></i> Kategori Produk</span>
+          </div>
+          <div class="category-chips" id="category-chips">
+            <!-- Dynamically populated categories -->
+            <button class="chip active" data-category="all">Semua Produk</button>
+          </div>
+        </div>
+
+        <!-- Secondary Controls (Sort & Limit Filter) -->
+        <div class="controls-row">
+          <div class="results-info">
+            <span id="results-count-text">Menampilkan <strong>0</strong> produk</span>
+            <button id="reset-filters-btn" class="text-link-btn hidden">
+              <i class="fa-solid fa-rotate-left"></i> Reset Filter
+            </button>
+          </div>
+
+          <div class="controls-group">
+            <!-- Sort Dropdown -->
+            <div class="custom-select-wrapper">
+              <label for="sort-select" class="visually-hidden">Urutkan Berdasarkan</label>
+              <select id="sort-select" class="custom-select">
+                <option value="default">✨ Urutkan: Default</option>
+                <option value="price-asc">💵 Harga: Terendah ke Tertinggi</option>
+                <option value="price-desc">💎 Harga: Tertinggi ke Terendah</option>
+                <option value="rating-desc">⭐ Rating Teratas</option>
+                <option value="title-asc">🔤 Nama A - Z</option>
+                <option value="discount-desc">🔥 Diskon Terbesar</option>
+              </select>
+            </div>
+
+            <!-- Limit Dropdown -->
+            <div class="custom-select-wrapper">
+              <label for="limit-select" class="visually-hidden">Jumlah Tampilan</label>
+              <select id="limit-select" class="custom-select">
+                <option value="12">12 / Halaman</option>
+                <option value="24" selected>24 / Halaman</option>
+                <option value="30">30 / Halaman</option>
+                <option value="60">60 / Halaman</option>
+                <option value="0">Semua Produk</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Active Filter Tags Display -->
+      <div id="active-filters-bar" class="active-filters-bar hidden">
+        <span class="active-filter-label">Filter Aktif:</span>
+        <div id="active-filter-tags" class="filter-tags-list"></div>
+      </div>
+
+      <!-- Products Grid Section -->
+      <section class="products-grid-section">
+        <!-- Skeleton Loaders Grid (Shown during loading) -->
+        <div id="products-skeleton-grid" class="products-grid">
+          <!-- Skeleton cards generated by JS -->
+        </div>
+
+        <!-- Products Grid (Real Data) -->
+        <div id="products-grid" class="products-grid hidden">
+          <!-- Dynamically filled with products -->
+        </div>
+
+        <!-- Empty State Container -->
+        <div id="empty-state" class="empty-state hidden">
+          <div class="empty-icon">
+            <i class="fa-solid fa-box-open"></i>
+          </div>
+          <h3>Produk Tidak Ditemukan</h3>
+          <p>Maaf, kami tidak dapat menemukan produk yang sesuai dengan kata kunci atau filter yang Anda pilih.</p>
+          <button type="button" id="empty-reset-btn" class="btn btn-primary">
+            <i class="fa-solid fa-rotate-left"></i> Reset Semua Filter
+          </button>
+        </div>
+
+        <!-- Error State Container -->
+        <div id="error-state" class="error-state hidden">
+          <div class="error-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <h3>Gagal Memuat Data Produk</h3>
+          <p id="error-message">Terjadi kesalahan koneksi saat mengakses API https://dummyjson.com/products.</p>
+          <button type="button" id="retry-fetch-btn" class="btn btn-primary">
+            <i class="fa-solid fa-rotate-right"></i> Coba Lagi
+          </button>
+        </div>
+      </section>
+
+      <!-- Pagination Container -->
+      <div id="pagination-container" class="pagination-container hidden">
+        <button id="prev-page-btn" class="btn btn-secondary page-btn" disabled>
+          <i class="fa-solid fa-chevron-left"></i> SEBELUMNYA
+        </button>
+        <div id="page-numbers" class="page-numbers"></div>
+        <button id="next-page-btn" class="btn btn-secondary page-btn">
+          SELANJUTNYA <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Product Detail Modal -->
+  <div id="product-modal" class="modal-overlay hidden" aria-hidden="true" role="dialog">
+    <div class="modal-card">
+      <button type="button" id="close-modal-btn" class="modal-close-btn" aria-label="Tutup Detail">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      
+      <div class="modal-body" id="modal-content">
+        <!-- Content inserted dynamically by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart Drawer -->
+  <div id="cart-drawer" class="drawer-overlay hidden">
+    <div class="drawer-panel">
+      <div class="drawer-header">
+        <h3><i class="fa-solid fa-cart-shopping"></i> Keranjang Belanja (<span id="drawer-cart-count">0</span>)</h3>
+        <button type="button" id="close-cart-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <div class="drawer-body" id="cart-items-container">
+        <!-- Cart Items -->
+      </div>
+      
+      <div class="drawer-footer">
+        <div class="cart-summary-row">
+          <span>Subtotal</span>
+          <span id="cart-subtotal" class="summary-price">$0.00</span>
+        </div>
+        <div class="cart-summary-row shipping-row">
+          <span>Pengiriman</span>
+          <span class="free-shipping-text">GRATIS</span>
+        </div>
+        <div class="cart-summary-row total-row">
+          <span>Total Akhir</span>
+          <span id="cart-total" class="summary-total">$0.00</span>
+        </div>
+        <button type="button" id="checkout-btn" class="btn btn-accent btn-full">
+          <i class="fa-solid fa-lock"></i> Lanjutkan Pembayaran
+        </button>
+        <button type="button" id="clear-cart-btn" class="text-danger-btn">
+          <i class="fa-solid fa-trash-can"></i> Kosongkan Keranjang
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wishlist Drawer -->
+  <div id="wishlist-drawer" class="drawer-overlay hidden">
+    <div class="drawer-panel">
+      <div class="drawer-header">
+        <h3><i class="fa-solid fa-heart text-rose"></i> Favorit Saya (<span id="drawer-wishlist-count">0</span>)</h3>
+        <button type="button" id="close-wishlist-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <div class="drawer-body" id="wishlist-items-container">
+        <!-- Wishlist Items -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-brand">
+        <div class="logo-icon small">
+          <i class="fa-solid fa-bag-shopping"></i>
+        </div>
+        <span class="brand-name">Lumina<span class="highlight">Store</span></span>
+      </div>
+      <p class="footer-text">Tugas 5 Pengembangan Aplikasi Web (PAW) Antara &bull; NIM: <strong>20240140118</strong></p>
+      <div class="footer-links">
+        <a href="https://dummyjson.com/docs/products" target="_blank" rel="noopener"><i class="fa-solid fa-code"></i> API Dokumentasi</a>
+        <a href="https://github.com/ilham101106/PAW-ANTARA-WEEK5-20240140118" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Repository GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Native JavaScript -->
+  <script src="app.js"></script>
+</body>
+</html>
